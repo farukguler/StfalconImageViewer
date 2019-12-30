@@ -52,15 +52,12 @@ internal class TransitionImageAnimator(
         onTransitionStart: (Long) -> Unit,
         onTransitionEnd: () -> Unit
     ) {
-//        if (externalImage.isRectVisible) {
-//            onTransitionStart(TRANSITION_DURATION_OPEN)
-//            doOpenTransition(containerPadding, onTransitionEnd)
-//        } else {
-//            onTransitionEnd()
-//        }
-
-        onTransitionStart(TRANSITION_DURATION_OPEN)
-        doOpenTransition(containerPadding, onTransitionEnd)
+        if (externalImage.isRectVisible) {
+            onTransitionStart(TRANSITION_DURATION_OPEN)
+            doOpenTransition(containerPadding, onTransitionEnd)
+        } else {
+            onTransitionEnd()
+        }
     }
 
     internal fun animateClose(
@@ -68,16 +65,13 @@ internal class TransitionImageAnimator(
         onTransitionStart: (Long) -> Unit,
         onTransitionEnd: () -> Unit
     ) {
-//        if (externalImage.isRectVisible && !shouldDismissToBottom) {
-//            onTransitionStart(TRANSITION_DURATION_CLOSE)
-//            doCloseTransition(onTransitionEnd)
-//        } else {
-//            externalImage?.visibility = View.VISIBLE
-//            onTransitionEnd()
-//        }
-
-        onTransitionStart(TRANSITION_DURATION_CLOSE)
-        doCloseTransition(onTransitionEnd)
+        if (externalImage.isRectVisible && !shouldDismissToBottom) {
+            onTransitionStart(TRANSITION_DURATION_CLOSE)
+            doCloseTransition(onTransitionEnd)
+        } else {
+            externalImage?.visibility = View.VISIBLE
+            onTransitionEnd()
+        }
     }
 
     private fun doOpenTransition(containerPadding: IntArray, onTransitionEnd: () -> Unit) {
