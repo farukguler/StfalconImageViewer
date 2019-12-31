@@ -22,6 +22,15 @@ import android.view.View
 import android.view.animation.AccelerateInterpolator
 import com.stfalcon.imageviewer.common.extensions.hitRect
 import com.stfalcon.imageviewer.common.extensions.setAnimatorListener
+import android.R.attr.duration
+import android.animation.ObjectAnimator
+import androidx.core.view.ViewCompat.animate
+import android.R.attr.translationY
+import android.animation.Animator
+import android.animation.ValueAnimator
+import android.os.Build
+import com.stfalcon.imageviewer.common.extensions.addAnimatorListener
+
 
 internal class SwipeToDismissHandler(
     private val swipeView: View,
@@ -88,19 +97,33 @@ internal class SwipeToDismissHandler(
     }
 
     private fun animateTranslation(translationTo: Float) {
-        swipeView.animate()
-            .translationY(translationTo)
-            .setDuration(ANIMATION_DURATION)
-            .setInterpolator(AccelerateInterpolator())
-            .setUpdateListener { onSwipeViewMove(swipeView.translationY, translationLimit) }
-            .setAnimatorListener(onAnimationEnd = {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            swipeView.animate()
+                    .translationY(translationTo)
+                    .setDuration(ANIMATION_DURATION)
+                    .setInterpolator(AccelerateInterpolator())
+                    .setUpdateListener { onSwipeViewMove(swipeView.translationY, translationLimit) }
+                    .setAnimatorListener(onAnimationEnd = {
+                        if (translationTo != 0f) {
+                            onDismiss()
+                        }
+
+                        //remove the update listener, otherwise it will be saved on the next animation execution:
+                        swipeView.animate().setUpdateListener(null)
+                    })
+                    .start()
+        } else {
+
+            val oa = ObjectAnimator.ofFloat(swipeView, View.TRANSLATION_Y, translationTo)
+                    .setDuration(ANIMATION_DURATION)
+            oa.addUpdateListener { onSwipeViewMove(swipeView.translationY, translationLimit) }
+            oa.addAnimatorListener(onAnimationEnd = {
                 if (translationTo != 0f) {
                     onDismiss()
                 }
-
-                //remove the update listener, otherwise it will be saved on the next animation execution:
-                swipeView.animate().setUpdateListener(null)
+                oa.removeAllUpdateListeners()
             })
-            .start()
+            oa.start()
+        }
     }
 }
