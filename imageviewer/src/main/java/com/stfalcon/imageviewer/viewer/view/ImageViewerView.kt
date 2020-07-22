@@ -152,8 +152,9 @@ internal class ImageViewerView<T> @JvmOverloads constructor(
             return true
         }
 
-        if (!this::transitionImageAnimator.isInitialized || transitionImageAnimator.isAnimating) {
-            return true
+        when {
+            !this::transitionImageAnimator.isInitialized -> return true
+            transitionImageAnimator.isAnimating -> return true
         }
 
         //one more tiny kludge to prevent single tap a one-finger zoom which is broken by the SDK
