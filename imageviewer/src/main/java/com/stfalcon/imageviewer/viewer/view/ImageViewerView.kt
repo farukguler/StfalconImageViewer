@@ -50,9 +50,9 @@ import com.stfalcon.imageviewer.loader.ImageLoader
 import com.stfalcon.imageviewer.viewer.adapter.ImagesPagerAdapter
 
 internal class ImageViewerView<T> @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
 ) : RelativeLayout(context, attrs, defStyleAttr) {
 
     internal var isZoomingAllowed = true
@@ -152,7 +152,7 @@ internal class ImageViewerView<T> @JvmOverloads constructor(
             return true
         }
 
-        if (transitionImageAnimator?.isAnimating == true){
+        if (transitionImageAnimator?.isAnimating == true) {
             return true
         }
 
@@ -235,6 +235,7 @@ internal class ImageViewerView<T> @JvmOverloads constructor(
                     overlayView?.animateAlpha(0f, 1f, duration)
                 },
                 onTransitionEnd = { prepareViewsForViewer() })
+                ?: kotlin.run { prepareViewsForViewer() }
     }
 
     private fun animateClose() {
@@ -247,7 +248,9 @@ internal class ImageViewerView<T> @JvmOverloads constructor(
                     backgroundView.animateAlpha(backgroundView.alpha, 0f, duration)
                     overlayView?.animateAlpha(overlayView?.alpha, 0f, duration)
                 },
-                onTransitionEnd = { onDismiss?.invoke() })
+                onTransitionEnd = { onDismiss?.invoke() }) ?: kotlin.run {
+            onDismiss?.invoke()
+        }
     }
 
     private fun prepareViewsForTransition() {
