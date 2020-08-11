@@ -271,6 +271,10 @@ internal class ImageViewerView<T> @JvmOverloads constructor(
         return when (swipeDirection) {
             UP, DOWN -> {
                 if (isSwipeToDismissAllowed && !wasScaled && imagesPager.isIdle) {
+                    if (::swipeDismissHandler.isInitialized.not()) {
+                        swipeDismissHandler = createSwipeToDismissHandler()
+                    }
+
                     swipeDismissHandler.onTouch(rootContainer, event)
                 } else true
             }
@@ -299,12 +303,21 @@ internal class ImageViewerView<T> @JvmOverloads constructor(
         wasScaled = false
         imagesPager.dispatchTouchEvent(event)
 
+        if (::swipeDismissHandler.isInitialized.not()) {
+            swipeDismissHandler = createSwipeToDismissHandler()
+        }
+
         swipeDismissHandler.onTouch(rootContainer, event)
         isOverlayWasClicked = dispatchOverlayTouch(event)
     }
 
     private fun handleEventActionUp(event: MotionEvent) {
         wasDoubleTapped = false
+
+        if (::swipeDismissHandler.isInitialized.not()) {
+            swipeDismissHandler = createSwipeToDismissHandler()
+        }
+
         swipeDismissHandler.onTouch(rootContainer, event)
         imagesPager.dispatchTouchEvent(event)
         isOverlayWasClicked = dispatchOverlayTouch(event)
